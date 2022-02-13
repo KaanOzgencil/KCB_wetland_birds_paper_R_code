@@ -10,7 +10,7 @@ installed, then simply navigate to the folder where you want to
 download the repository and click on the address bar, write "cmd"
 and press enter. Then, in the terminal, write "git clone" and minimize
 the terminal window. Then, go back to your web browser and go to 
-https://github.com/KaanOzgencil/KCB_wetland_birds_paper_R_code and
+https://github.com/KaanOzgencil/ozgencil_et_al_2022 and
 click on the green "Code" button and copy the cloning URL provided
 there. Then, go back to the terminal window, press space button to have
 a space and then paste the URL you have copied and press enter. 
@@ -24,7 +24,7 @@ drag and drop the folder, where you want to download the repository,
 onto the terminal window and press enter. Then, in the terminal, 
 write "git clone" and minimize the terminal window. Then, go back to 
 your web browser and go to 
-https://github.com/KaanOzgencil/KCB_wetland_birds_paper_R_code and
+https://github.com/KaanOzgencil/ozgencil_et_al_2022 and
 click on the green "Code" button and copy the cloning URL provided
 there. Then, go back to the terminal window, press space button to have
 a space and then paste the URL you have copied and press enter. 
