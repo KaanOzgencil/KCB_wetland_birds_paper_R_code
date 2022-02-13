@@ -1,5 +1,5 @@
 ## Functional Responses of Wetland Birds to Human-caused Habitat Degradation and Climate Change: A Case Study from Turkey #
-This repository has the R code to reproduce all the analyses and figures for Özgencil *et al*. (2022).
+This repository has the R code and data to reproduce all the analyses and figures for Özgencil *et al*. (2022).
 
 *Corresponding author*: İ. Kaan Özgencil - kaanozgencil@gmail.com
 
