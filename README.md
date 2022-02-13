@@ -1,4 +1,4 @@
-## Functional Responses of Wetland Birds to Human-caused Habitat Degradation and Climate Change: A Case Study from Turkey #
+## Functional consequences of wetland degradation and climate change for breeding birds across different spatial scales ##
 This repository has the R code and data to reproduce all the analyses and figures for Özgencil *et al*. (2022).
 
 *Corresponding author*: İ. Kaan Özgencil - kaanozgencil@gmail.com
