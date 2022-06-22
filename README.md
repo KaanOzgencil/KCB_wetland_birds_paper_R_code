@@ -1,4 +1,4 @@
-## Functional consequences of wetland degradation and climate change for breeding birds across different spatial scales ##
+## Impact of wetland degradation and climate change on diversity and functional traits of breeding wetland birds across spatial scales ##
 This repository has the R code and data to reproduce all the analyses and figures for XXXXXX.
 
 *Corresponding author*: XXXXXX
