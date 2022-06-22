@@ -1,7 +1,7 @@
 ## Functional consequences of wetland degradation and climate change for breeding birds across different spatial scales ##
-This repository has the R code and data to reproduce all the analyses and figures for Özgencil *et al*. (2022).
+This repository has the R code and data to reproduce all the analyses and figures for XXXXXX.
 
-*Corresponding author*: İ. Kaan Özgencil - kaanozgencil@gmail.com
+*Corresponding author*: XXXXXX
 
 
 ### HOW TO DOWNLOAD THE WHOLE REPOSITORY FROM GITHUB
@@ -11,7 +11,7 @@ installed, then simply navigate to the folder where you want to
 download the repository and click on the address bar, write "cmd"
 and press enter. Then, in the terminal, write "git clone" and minimize
 the terminal window. Then, go back to your web browser and go to 
-https://github.com/KaanOzgencil/ozgencil_et_al_2022 and
+the GitHub repository link and
 click on the green "Code" button and copy the cloning URL provided
 there. Then, go back to the terminal window, press space button to have
 a space and then paste the URL you have copied and press enter. 
@@ -25,7 +25,7 @@ drag and drop the folder, where you want to download the repository,
 onto the terminal window and press enter. Then, in the terminal, 
 write "git clone" and minimize the terminal window. Then, go back to 
 your web browser and go to 
-https://github.com/KaanOzgencil/ozgencil_et_al_2022 and
+the GitHub repository link and
 click on the green "Code" button and copy the cloning URL provided
 there. Then, go back to the terminal window, press space button to have
 a space and then paste the URL you have copied and press enter. 
