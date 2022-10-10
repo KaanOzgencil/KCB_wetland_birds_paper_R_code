@@ -1,7 +1,7 @@
 ## Impact of wetland degradation and climate change on diversity and functional traits of breeding wetland birds across spatial scales ##
-This repository has the R code and data to reproduce all the analyses and figures for XXXXXX.
+This repository has the R code and data to reproduce all the analyses and figures from Özgencil et al. (2022).
 
-*Corresponding author*: XXXXXX
+*Corresponding author*: İ. Kaan Özgencil - kaanozgencil@gmail.com
 
 
 ### HOW TO DOWNLOAD THE WHOLE REPOSITORY FROM GITHUB
