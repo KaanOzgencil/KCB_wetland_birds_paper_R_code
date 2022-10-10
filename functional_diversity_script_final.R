@@ -22,6 +22,7 @@ library(gridExtra) # Version used: 2.3
 library(coRanking) # Version used: 0.2.3
 library(ggpubr) # Version used: 0.4.0
 library(performance) # Version used: 0.9.0
+library(mFD) # Version used: 1.0.1
 
 
 # Read in the source files, which are the community matrices and the trait
@@ -147,7 +148,7 @@ sapply(X = (1:88), func_binary) -> indexer
 trait_matrix[, indexer] -> binaries
 
 # Remember, there is only one categorical variable and it's the early 
-# developmental mode. 
+# developmental mode.
 trait_matrix[, !indexer] -> non_binaries
 non_binaries[, -c(1,12)] -> non_binaries # Removing the categorical one and the
 # species name column.
@@ -288,7 +289,9 @@ colnames(basin_incidences) == trait_matrix$species
 trait_matrix$species -> rownames(trait_matrix_final)
 rownames(trait_matrix_final) == colnames(basin_incidences) # No problem here.
 
-# We can now proceed with the functional diversity calculations at gamma scale.
+# We can now proceed with the functional diversity calculations at gamma scale. 
+# Start with 12 dimensions, which is the highest number of dimensions we can 
+# include without crushing the function.
 dbFD(x = trait_matrix_final, a = basin_incidences, w = weights$WEIGHT, 
      corr = "cailliez", calc.CWM = T, calc.FDiv = F, 
      CWM.type = "all" , print.pco = T, m = 12) -> FD_incidences
@@ -312,6 +315,41 @@ coranking(Xi = gower_dists, X = pcoa_axes[, 1:12], input_Xi = "dist",
 R_NX(x1) -> x2
 AUC_ln_K(x2) # AUC: 0.76 for the dimensionality reduction. See Mouillot et al. 
 # (2021) and section 3.3 of the script for more.
+
+# Repeat the same with 4 (same number of dimensios as the beta diversity 
+# calculations) and 7 dimensions (the lowest mad score - see 3.3.2). Start with
+# 7 dimensions.
+dbFD(x = trait_matrix_final, a = basin_incidences, w = weights$WEIGHT, 
+     corr = "cailliez", calc.CWM = T, calc.FDiv = F, 
+     CWM.type = "all" , print.pco = T, m = 7) -> FD_incidences_7
+FD_incidences_7$FRic
+100 - (7.502219e-05 /1.414682e-04)*100 # The decline in gamma-scale Functional 
+# Richness (FRic) is 50.0%, which is nearly 2.6 times larger than the decline in 
+# taxonomic richness (19.2%).
+# 7 PCoA axes explained 39.9% of the total variation in the data.
+
+# Also, calculate the AUC for this dimensionality reduction.
+gowdis(x = trait_matrix_final, w = weights$WEIGHT) -> gower_dists
+coranking(Xi = gower_dists, X = pcoa_axes[, 1:7], input_Xi = "dist", 
+          input_X = "data", use = "C") -> x1
+R_NX(x1) -> x2
+AUC_ln_K(x2) # AUC: 0.68 for this dimensionality reduction.
+# Repeat the same for 4 dimensions.
+dbFD(x = trait_matrix_final, a = basin_incidences, w = weights$WEIGHT, 
+     corr = "cailliez", calc.CWM = T, calc.FDiv = F, 
+     CWM.type = "all" , print.pco = T, m = 4) -> FD_incidences_4
+FD_incidences_4$FRic
+100 - (0.02309452 /0.02841240)*100 # The decline in gamma-scale Functional 
+# Richness (FRic) is 18.7%, which is smaller than the decline intaxonomic 
+# richness (19.2%).
+# The first 4 PCoA axes explained 31.1% of the total variation in the data.
+
+# Also, calculate the AUC for this dimensionality reduction.
+gowdis(x = trait_matrix_final, w = weights$WEIGHT) -> gower_dists
+coranking(Xi = gower_dists, X = pcoa_axes[, 1:4], input_Xi = "dist", 
+          input_X = "data", use = "C") -> x1
+R_NX(x1) -> x2
+AUC_ln_K(x2) # AUC: 0.55 for this dimensionality reduction.
 
 # Next, calculate alpha-scale FD metrics for the study years and squares. To do
 # that, we will have to merge the two community matrices into one.
@@ -412,8 +450,12 @@ ggplot() +
   theme(panel.border = element_rect(colour = "gray35", fill = NA, size = 0.5)) +
   ylab(label = "Functional Richness (FRic)") + xlab(label = NULL) +
   theme(axis.title.x = element_text(size = 12)) +
-  guides(fill = guide_legend("Year")) -> p_fric_alpha
+  guides(fill = guide_legend("Year")) +
+  scale_y_continuous(position = "right")-> p_fric_alpha
 p_fric_alpha
+# Save the plot (optional).
+ ggsave(filename = "functional diversity/figs/p_alpha_FRic.tiff", 
+       device = "tiff", dpi = 500, height = 3, width = 2.9)
 # Continue with the area.
 ggplot(data = FRic_df) +
   geom_point(aes(x = area, y = FRic), pch = 16) +
@@ -499,6 +541,25 @@ dredge(m_fric_alpha) # The covariate makes the model better.
 # The model is valid.
 
 
+#
+FD_alpha_shared$CWM[1:22,] -> CWMs_1998
+FD_alpha_shared$CWM[23:44,] -> CWMs_2018
+
+
+data.frame(year = c(rep("1998" ,22), rep("2018", 22)),
+           body_mass = c(CWMs_1998$body_mass_wi_du, 
+                         CWMs_2018$body_mass_wi_du),
+           brain_mass = c(CWMs_1998$brain_mass_residuals_va,
+                          CWMs_2018$brain_mass_residuals_va)) -> CWMs_df
+
+m_body_mass <- glmmTMB(data = CWMs_df, 
+                       formula = brain_mass ~year, 
+                       family = gaussian(link = "identity"))
+summary(m_body_mass)
+
+
+
+
 ## 3.2: BETA FUNCTIONAL DIVERSITY ####
 
 
@@ -516,12 +577,14 @@ study_comms_shared[23:44, ] -> comms_2018_shared
 FD_alpha_shared$x.axes -> pcoa_axes_shared
 functional.betapart.core.pairwise(x = comms_1998_shared, 
                                   traits = pcoa_axes_shared[1:4], 
-                                  parallel = T, return.details = T, progress = T,
+                                  parallel = T, return.details = T, 
+                                  progress = T,
                                   beta.para.control(nc = 10, 
                                                     size = 150)) -> FD_beta_1998
 functional.betapart.core.pairwise(x = comms_2018_shared, 
                                   traits = pcoa_axes_shared[1:4], 
-                                  parallel = T, return.details = T, progress = T, 
+                                  parallel = T, return.details = T, 
+                                  progress = T, 
                                   beta.para.control(nc = 8, 
                                                     size = 100)) -> FD_beta_2018
 
@@ -793,6 +856,9 @@ length(which(intercept_dif_FBsor > 0)) # Smaller one.
 ## 3.3: QUALITY OF DIMENSIONALITY REDUCTION ####
 
 
+### 3.3.1: THE AUC METHOD ####
+
+
 # Write a function that will calculate the AUC value for each PCoA axes included
 # along with a net benefit (as described in Mouillot et al. (2021)) to calculate
 # the elbow inflexion point for the SHARED dataset.
@@ -932,6 +998,42 @@ mantel(gower_dists_full, gower_dists_4, method = "spearman",
 # calculated by using all of the traits.
 
 
+### 3.3.2: THE MAD METHOD ####
+
+
+# In this part, we will use the mFD package to find the best functional space. 
+# First, we have to define a data frame that has trait type and weight data.
+data.frame(trait_name = colnames(trait_matrix_final), 
+           trait_type = rep(NA, ncol(trait_matrix_final)),
+           trait_weight = weights$WEIGHT) -> trait_types
+# Read in the data frame that has the trait type information.
+read.csv("trait_type.csv", header = T) -> trait_cat
+trait_cat$trait_type -> trait_types$trait_type; remove(trait_cat)
+# Get a summary of the trait data.
+sp.tr.summary(tr_cat = trait_types, sp_tr = trait_matrix_final, 
+              stop_if_NA = F) -> tr_summaries
+tr_summaries$tr_types # To check the trait categories.
+
+# Calculate the functional distances between the species now.
+funct.dist(sp_tr = trait_matrix_final, tr_cat = trait_types, 
+           metric = "gower", weight_type = "user", 
+           stop_if_NA = F) -> functional_dists
+
+# Calculate the quality of the functional spaces.
+quality.fspaces(sp_dist = functional_dists, maxdim_pcoa = 15, 
+                fdendro = "average", fdist_scaling = F, 
+                deviation_weighting = "absolute") -> quality_mad
+# Get the mad values.
+quality_mad$quality_fspaces
+# The first 7 PCoA axes give the best (i.e., the lowest) mad value, which means 
+# the best-performing functional space according to the mad metric is the one 
+# with 7 dimensions. 4 and 12 dimensions both seem to perform worse than 7
+# dimensions. However, we choose to use the AUC method over this one to make our
+# calculations mainly because we believe relative deviations rather than 
+# absolute deviations from the original functional distances is more important
+# in functional richness comparisons.
+
+
 ## 3.4: FUNCTIONAL ORIGINALITY ####
 
 
@@ -993,13 +1095,6 @@ for(i in 1:ncol(fori_1998_comms)){
 # We can see that 23 out of 28 have lost the most original species. In addition, 
 # extinct species had on average 15% higher ranks (in terms of their FOri) when 
 # compared to the extant species.
-
-
-
-
-
-
-
 
 
 
