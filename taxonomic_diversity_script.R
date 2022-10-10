@@ -12,6 +12,7 @@ library(MuMIn) # Version used: 1.46.0
 library(betapart) # Version used: 1.5.6
 library(ggpubr) # Version used: 0.4.0
 library(performance) # Version used: 0.9.0
+library(ecopart) # Version used: 0.2.0
 
 # Read in the source files. The files given here include A-coded breeding 
 # records (i.e., possible records) too. For more information on the breeding 
@@ -280,6 +281,12 @@ study_comm_1998[order(rownames(study_comm_1998)), ] -> study_comm_1998
 study_comm_2018[order(rownames(study_comm_2018)), ] -> study_comm_2018
 beta.pair(study_comm_1998, index.family = "sorensen") -> pairwise_1998
 beta.pair(study_comm_2018, index.family = "sorensen") -> pairwise_2018
+
+# Also calculate the multisite beta diversity.
+beta.multi(x = study_comm_1998, index.family = "sorensen")
+beta.multi(x = study_comm_2018, index.family = "sorensen")
+# Bsor increased from 0.91 to 0.94. Bsim increased from 0.74 to 0.82, while Bsne
+# decreased from 0.17 to 0.12.
 
 
 ## 3.1: DISTANCE-DECAY MODELS ####
@@ -555,7 +562,7 @@ length(which(intercept_dif_Bsor > 0)) # Smaller one.
 # having a higher intercept for Bsor ddm.
 
 
-## 3.2: COMPONENTS OF BETA DIVERSITY ####
+## 3.2: TURNOVER AND NESTEDNESS COMPONENTS OF BETA DIVERSITY ####
 
 
 # Create a data frame that will have all the data.
@@ -599,5 +606,12 @@ p_beta_taxonomic
 #        units = "mm", width = 120, height = 75)
 
 
+## 3.3: GAIN AND LOSS COMPONENTS OF BETA DIVERSITY CHANGES ####
 
 
+# Compare the multisite beta diversities and try to get the gain and loss components.
+data.frame(t(ecopart.multi(d1 = study_comm_1998, d2 = study_comm_2018, index = "whittaker", components = "sp"))) -> gain_loss_multi
+gain_loss_multi
+# Obtain the percent contributions of differentiation.
+100 * 4.6700382 / (4.6700382 + 1.0350315)
+# Around 82% of the differentiation was caused by species extinctions.
